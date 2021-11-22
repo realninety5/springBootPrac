@@ -22,17 +22,22 @@ public class SurveyController {
     }
 
     @PostMapping("/survey/{surveyId}/questions")
-    public ResponseEntity<Void> addQuestions(@PathVariable String surveyId, @RequestBody Question newQuestion) {
+    public ResponseEntity<Question> addQuestions(@PathVariable String surveyId, @RequestBody Question newQuestion) {
         Question question = surveyService.addQuestion(surveyId, newQuestion);
 
         if (question==null) return ResponseEntity.noContent().build();
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(question.getId()).toUri();
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(question);
     }
 
     @GetMapping("survey/{surveyId}/{questionId}")
     public Question retrieveQuestion(@PathVariable String surveyId, @PathVariable String questionId) {
         return surveyService.retrieveQuestion(surveyId, questionId);
+    }
+
+    @GetMapping("/surveys")
+    public List<Survey> retrieveSurveys() {
+        return surveyService.retrieveAllSurveys();
     }
 }
